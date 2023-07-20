@@ -1,0 +1,27 @@
+services:
+  redis:
+    image: redis:7.0
+
+  web1:
+    build: web
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
+    depends_on:
+      - redis
+    networks:
+      - backend
+      - frontend
+
+  proxy:
+    build: proxy
+    ports:
+      - 80:8000
+    depends_on:
+      - web1
+    networks:
+      - frontend
+
+networks:
+  backend:
+  frontend:
